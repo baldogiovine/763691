@@ -1,6 +1,6 @@
 ﻿# Air transportation fare prediction project
 - Domenico Alberini (762411)
-- Federico Jacopo Baldoni (763691)
+- Federico Jacopo Baldoni (763691) - Captain
 - Vincenzo Rosario Musto (758701)
 ## Introduction
 In this project, a dataset regarding the flights ticket prices in the Indian market is analyzed. The main aim of this project is to create a regression algorithm which can predict the ticket prices, given the information about more than 300.000 flights.
