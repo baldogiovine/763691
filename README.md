@@ -16,28 +16,22 @@ Then, we have decided to plot a boxplot of our target variable, which is the pri
 
 As we can see from the picture below, there are some outliers on the right part of the boxplot, we have decided to drop them to remove the noise in the dataset and to improve the performances of the algorithms which we are going to see next.
 
-![Price Boxplot](https://github.com/baldogiovine/763691/blob/main/images/price_boxplot.png)
+![Price Boxplot](https://github.com/baldogiovine/763691/blob/main/images/price_boxplot.jpg)
 
 
 Moreover, we have decided to plot the distribution of the price variable. As we have noticed a gaussian curve for the low prices and another for the high prices, we did think that it can depend on the class of the flight, respectively “Economy” and “Business”. We have decided to plot the distribution of the price variable for each class. As we can see from the plot below, the economy flights are way cheaper than the business flights.
 
-<![if !vml]>![Immagine che contiene schermata, linea, schermo, Diagramma
-
-Descrizione generata automaticamente](file:///C:/Users/vinci/AppData/Local/Temp/msohtmlclip1/01/clip_image004.png)<![endif]>
+![Price by class](https://github.com/baldogiovine/763691/blob/main/images/price_by_class.jpg)
 
 Then, we wanted to check the price distribution respecting to the number of stops for the flights.
 
 From the boxplot below, it can be inferred that the price of flights with one stop is higher, compared to those with no stops or two or more stops.
 
-**<![if !vml]>![Immagine che contiene linea, diagramma, testo, Diagramma
-
-Descrizione generata automaticamente](file:///C:/Users/vinci/AppData/Local/Temp/msohtmlclip1/01/clip_image006.png)<![endif]>**
+![Boxplot price-stops](https://github.com/baldogiovine/763691/blob/main/images/boxplot_price_stops.jpg)
 
 To investigate the reason why, we thought it could depend on the duration of the flights, and as can be seen in the boxplot below, flights with zero stops last significantly less in terms of hours. This also explains why, counterintuitively, flights with no stops have prices significantly lower than those with one stop and two or more stops. In fact, the flights with no stops could regard nearer cities, comparing to the flights with stops.
 
-<![if !vml]>![Immagine che contiene diagramma, linea, schermata, Rettangolo
-
-Descrizione generata automaticamente](file:///C:/Users/vinci/AppData/Local/Temp/msohtmlclip1/01/clip_image008.png)<![endif]>
+![Boxplot duration-stop](https://github.com/baldogiovine/763691/blob/main/images/boxplot_duration_stop.jpg)
 
 ### Column Transformer
 
@@ -53,9 +47,9 @@ The first column transformer (ct) is composed of a OneHotEncoder for all the cat
 
 The second column transformer (ctc) is basically the same as the first one, but with the exception for the implementation of a custom cyclic for the “departure_time” and “arrival_time” columns, which aim is to make it understandable for the regression models that the times of the day are cyclical, meaning that after late night there is again the early morning. This implementation has been inspired after some works on time series forecasting during another project. The main idea behind it is to order the categories with an ordinal encoder (from early morning to late night), then on both variables sin and cosin are calculated on the value obtained from this formula: (2π*x)/(max_val), where x is the ordinal encoded value of the category, while max_val is the number of unique categories.
 
-<![if !vml]>![Immagine che contiene testo, schermata, software, numero
+![Column transformer](https://github.com/baldogiovine/763691/blob/main/images/column_transformer.jpg)
 
-Descrizione generata automaticamente](file:///C:/Users/vinci/AppData/Local/Temp/msohtmlclip1/01/clip_image010.png)<![endif]>
+![Cyclical column transformer](https://github.com/baldogiovine/763691/blob/main/images/column_transformer_cyclical.jpeg)
 
 Moreover, we have tried to perform a box-cox with a PowerTransformer on the target variable (price), but since it is distributed like two different independent functions, performing this kind of manipulations of it, actually gets us in a worse situation so we have decided to keep the variable without any kind of manipulation.
 
@@ -65,17 +59,13 @@ After performing the column transformer, we have decided to check the correlatio
 
 At first, we are checking the correlation, we can see from the picture below that the Economy class is highly negatively correlated with the price, while the Vistara airline is kind of positively correlated with the price.
 
-<![if !vml]>![Immagine che contiene testo, linea, Diagramma, schermata
-
-Descrizione generata automaticamente](file:///C:/Users/vinci/AppData/Local/Temp/msohtmlclip1/01/clip_image012.jpg)<![endif]>
+![Price correlation](https://github.com/baldogiovine/763691/blob/main/images/price_correlation.jpg)
 
 Moreover, we have decided to check the mutual info regression. After some researches, we have discovered that when a lot of categorical variables are present in a dataset, it is usually better to check for the dependency, instead of the classical linear correlation and so, to use algorithms like mutual info regression.
 
 In fact, the mutual information between two random variables is a non-negative value, which measures the dependency between the variables. Dependency suggests that changes in one variable directly affect the other variable. It implies a cause-and-effect relationship. The graph below tells us that there is a high dependency between the duration of the flight and the price.
 
-<![if !vml]>![Immagine che contiene testo, schermata, linea, Parallelo
-
-Descrizione generata automaticamente](file:///C:/Users/vinci/AppData/Local/Temp/msohtmlclip1/01/clip_image014.jpg)<![endif]>
+![Mutual info regression](https://github.com/baldogiovine/763691/blob/main/images/mutual_info_regression.jpg)
 
 ### Stratified train-test split
 
@@ -85,7 +75,7 @@ As we have seen in the EDA section, we have seen that the “class” categorica
 
 Concerning the metrics used to evaluate the performance of models and to compare them among each other, three metrics have been chosen, the pros and cons of which will be elucidated.
 
-_R^2:_
+_**R^2**:_
 
 Pro:
 
@@ -95,7 +85,7 @@ Cons:
 
 It is not a robust metric and can be influenced by outliers or anomalous data. It does not take into account the complexity of the model, namely the number of variables used.
 
-_RMSE:_
+_**RMSE**:_
 
 Pro:
 
@@ -105,7 +95,7 @@ Cons:
 
 It does not take into account the direction of errors, only their magnitude. Leading in our case to not being able to tell whether there is an under- or over-estimation of the predicted prices.
 
-_MAPE:_
+_**MAPE**:_
 
 Pro:
 
@@ -118,6 +108,8 @@ One limitation is that it may not be the best fit for models where the dependent
 ### Models
 
 As we can see from the flowchart below, we have implemented different regression models. In particular, we have divided them in linear, ensamble trees and artificial neural networks. Moreover, we have created a requirements.txt to recreate our virtual environment.
+
+![flowchart](https://github.com/baldogiovine/763691/blob/main/images/flights_flowchart.jpg)
 
 ### Experimental design
 
@@ -191,7 +183,7 @@ train 0.08428840344965698
 
 test: 0.09867852717171964
 
-In the end, we implemented a XGBoost model based on DMatrices. We imported xgboost with the native API since we needed a fast-to-train model, while the sklearn implementation do not support the DMatrices. Then, since this version of XGBoost do not rely on sklearn, we could not use the Grid Search as we did for the other models. We implemented Optuna instead, so we could perform the hyperparameter tuning.
+In the end, we implemented a **XGBoost** model based on DMatrices. We imported xgboost with the native API since we needed a fast-to-train model, while the sklearn implementation do not support the DMatrices. Then, since this version of XGBoost do not rely on sklearn, we could not use the Grid Search as we did for the other models. We implemented Optuna instead, so we could perform the hyperparameter tuning.
 
 The scores for this model are:
 
@@ -227,9 +219,7 @@ We have decided to use ReLU as activation function for the hidden layers as it i
 
 We can therefore plot the resulting ANN model:
 
-<![if !vml]>![Immagine che contiene testo, schermata, Carattere, numero
-
-Descrizione generata automaticamente](file:///C:/Users/vinci/AppData/Local/Temp/msohtmlclip1/01/clip_image016.jpg)<![endif]>
+![ANN](https://github.com/baldogiovine/763691/blob/main/images/model_ANN_ctc.jpg)
 
 As the ANN captures the non-linear relationships inside the dataset, with great performances and with the possibility to store the training data, we have decided to keep this model in our project.
 
@@ -261,15 +251,11 @@ Therefore, we want to deeper understand how this model works so we analyzed the 
 
 Looking at shap values we can see that, how we expected, the most important feature is class. In fact, if we go back looking at EDA, it is possible to notice how the target variable (price) is explained by class feature. Class explains those two cusps: the first is related to economy category and the second one by business category. Value of one category does not affect values of the other category: they seem to be two separated functions.
 
-<![if !vml]>![Immagine che contiene testo, schermata, numero, Carattere
-
-Descrizione generata automaticamente](file:///C:/Users/vinci/AppData/Local/Temp/msohtmlclip1/01/clip_image018.jpg)<![endif]>
+![Shap](https://github.com/baldogiovine/763691/blob/main/images/shap1.jpg)
 
 Then, we have plotted the mean of the absolute shap values of the features, in order to understand the absolute impact of each feature on the target variable (price).
 
-<![if !vml]>![Immagine che contiene testo, schermata, numero, Carattere
-
-Descrizione generata automaticamente](file:///C:/Users/vinci/AppData/Local/Temp/msohtmlclip1/01/clip_image020.jpg)<![endif]>
+![Shap bars](https://github.com/baldogiovine/763691/blob/main/images/shap2.jpg)
 
 To confirm what we just said, here you can see how optimazing a model with only the class feature still leads to a pretty decent result with:
 
